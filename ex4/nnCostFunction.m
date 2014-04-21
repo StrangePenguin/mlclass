@@ -44,34 +44,64 @@ a1 = [ones(m,1)  X];
 %we really want a column vector for each example
 a1 = a1';
 
+%%%%%vectorized version of J calculation
+z2_v = Theta1 * a1;
+a2_v = sigmoid(z2_v);
+%add bias row
+a2_vb = [ones(1,m) ; a2_v];
+a3_v = sigmoid(Theta2 * a2_vb);
+%not sure how to get rid of the for loop in defining the y matrix
+y_v = zeros(num_labels,m);
 for i=1:m
-  %extract this training example
-  a1i = a1(:,i); %column vector
-  z2 = Theta1 * a1i;
-  a2 = sigmoid( z2 );
-  a2 = [1 ; a2]; %add bias
-  a3 = sigmoid( Theta2 * a2);
-%now y
-  thisy = zeros(num_labels,1);
-  thisy( y(i) ) = 1;
-%and now the sum over K
-  J = J + sum(-thisy .* log( a3 ) - (1-thisy) .* log(1 - a3));
-%%%%%%now the backprop part
-  delta3 = a3 - thisy;
-  delta2 = (Theta2' * delta3);
-  %drop term associated with bias
-  delta2 = delta2(2:end);
-  delta2 = delta2 .* sigmoidGradient( z2);
-  Theta2_grad = Theta2_grad + delta3 * a2';
-  Theta1_grad = Theta1_grad + delta2 * a1i';
+    y_v( y(i), i) = 1;
 end
+J_v = -y_v .* log( a3_v ) - (1-y_v) .* log(1-a3_v);
+J_v_sum = sum( J_v(:));
+% Works!
+%%% vectorized version of backprop calculation
+delta3_v = a3_v - y_v;
+delta2_v = Theta2' * delta3_v;
+%drop bias term
+delta2_vnb = delta2_v(2:end,:);
+delta2_z2 = delta2_vnb .* sigmoidGradient( z2_v );
+Theta2_grad = delta3_v * a2_vb';
+Theta1_grad = delta2_z2 * a1';
+%%%% end
+
+%for i=1:m
+%  %extract this training example
+%  a1i = a1(:,i); %column vector
+%  z2 = Theta1 * a1i;
+%  a2 = sigmoid( z2 );
+%  a2 = [1 ; a2]; %add bias
+%  a3 = sigmoid( Theta2 * a2);
+%%now y
+%  thisy = zeros(num_labels,1);
+%  thisy( y(i) ) = 1;
+%%and now the sum over K
+%  %J = J + sum(-thisy .* log( a3 ) - (1-thisy) .* log(1 - a3));
+%%%%%%%now the backprop part
+%  delta3 = a3 - thisy;
+%  delta2 = (Theta2' * delta3);
+%  %drop term associated with bias
+%  delta2 = delta2(2:end);
+%  delta2 = delta2 .* sigmoidGradient( z2);
+%  Theta2_grad = Theta2_grad + delta3 * a2';
+%  Theta1_grad = Theta1_grad + delta2 * a1i';
+%end
+
+
+%printf('Before regularization, J values are %f %f\n',J/m,J_v_sum/m);
+%looks good!
 
 %now add regularization
 %%%important -- drop the first column of each matrix
 Theta1r = Theta1(:,2:input_layer_size+1);
 Theta2r = Theta2(:,2:size(Theta2)(2));
 nn_params_r = [Theta1r(:) ; Theta2r(:)];
-J = J + 0.5*lambda*sum( nn_params_r .^ 2);
+reg_term =0.5*lambda*sum( nn_params_r .^ 2); 
+%J = J + reg_term;
+J_v_sum = J_v_sum + reg_term;
 
 %%gradient regularization
 %%%put back the first column but as zeroes
@@ -80,7 +110,11 @@ Theta2rg = [zeros(size(Theta2)(1),1)  Theta2r];
 Theta1_grad = Theta1_grad + lambda * Theta1rg;
 Theta2_grad = Theta2_grad + lambda * Theta2rg;
 
-J = J/m;
+%J = J/m;
+J = J_v_sum/m;
+
+%printf('J values are %f %f\n',J,J_v_sum);
+
 Theta1_grad = Theta1_grad / m;
 Theta2_grad = Theta2_grad / m;
 
@@ -107,24 +141,6 @@ Theta2_grad = Theta2_grad / m;
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 % -------------------------------------------------------------
 
