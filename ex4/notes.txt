@@ -1,0 +1,19 @@
+After finishing nominal assignment, check timing:
+
+Checking Cost Function (w/ Regularization) ... 
+Cost at parameters (loaded from ex4weights): 0.383770 
+(this value should be about 0.383770)
+Total/user/system CPU time for nnCostFunction= 2.748000 / 2.708000 / 0.040000 
+Program paused. Press enter to continue.
+
+=== after completing the vectorization of the code ===
+(except for the small for loop to fill the y matrix)
+
+Checking Cost Function (w/ Regularization) ... 
+Cost at parameters (loaded from ex4weights): 0.383770 
+(this value should be about 0.383770)
+Total/user/system CPU time for nnCostFunction= 0.380000 / 0.316000 / 0.064000 
+Program paused. Press enter to continue.
+
+
+== not bad!
