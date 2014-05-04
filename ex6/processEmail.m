@@ -99,11 +99,16 @@ while ~isempty(email_contents)
 
 
 
-
-
-
-
-
+%this is the worst search algorithm ever!
+%would be better to have the alphabetically-sorted list in a
+%data structure that understands that it is sorted, and do a logN search
+    for iword=1:length(vocabList)
+	word = vocabList{iword};
+	if (strcmp(str,word)==1)
+	   word_indices=[word_indices ; iword];
+	   break;
+	endif
+    endfor
 
 
     % =============================================================
