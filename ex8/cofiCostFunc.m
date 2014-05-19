@@ -13,7 +13,7 @@ Theta = reshape(params(num_movies*num_features+1:end), ...
 
             
 % You need to return the following values correctly
-J = 0;
+J = 0.5*sum(sum(((Theta*X' - Y') .*  R').^2));
 X_grad = zeros(size(X));
 Theta_grad = zeros(size(Theta));
 
