@@ -14,8 +14,15 @@ Theta = reshape(params(num_movies*num_features+1:end), ...
             
 % You need to return the following values correctly
 J = 0.5*sum(sum(((Theta*X' - Y') .*  R').^2));
-X_grad = zeros(size(X));
-Theta_grad = zeros(size(Theta));
+h = ((Theta*X' - Y') .*  R');
+X_grad = h' * Theta;
+Theta_grad = h * X;
+
+%add regularization
+J = J + 0.5*lambda *( sum(sum(Theta.^2)) + sum(sum(X.^2)));
+
+X_grad = X_grad + lambda*X;
+Theta_grad = Theta_grad + lambda*Theta;
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: Compute the cost function and gradient for collaborative
